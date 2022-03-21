@@ -7,4 +7,8 @@
     <string name="tab_text_1">Followers</string>
     <string name="tab_text_2">Following</string>
     <string name="added">Favorit user ditambahkan</string>
+    <string name="favorite">Favorite User</string>
+    <string name="setting">Pengaturan</string>
+    <string name="dark_mode">Nyalakan Mode Gelap</string>
+    <string name="send_to">Bagikan</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.kls.githubuserian.adapter
 
 import android.content.Intent
+import android.provider.Settings.System.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +29,11 @@ class UserAdapter(private val listUser: ArrayList<UserModel>) : RecyclerView.Ada
         val (id, username, avatar, url_github) = listUser[position]
         holder.txtname.text = username
         holder.txtvisit.setOnClickListener {
-            Toast.makeText(holder.itemView.context, "Hola $id", Toast.LENGTH_SHORT).show()
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.type="text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Visit this cool github user $url_github");
+            holder.itemView.context.startActivity(Intent.createChooser(shareIntent,holder.itemView.context.getString(R.string.send_to)))
         }
         Glide.with(holder.itemView.context)
             .load(avatar)

@@ -10,31 +10,56 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kls.githubuserian.adapter.UserAdapter
 import com.kls.githubuserian.model.UserModel
+import com.kls.githubuserian.utils.SettingPreferences
+import com.kls.githubuserian.viewModel.SettingViewModel
+import com.kls.githubuserian.viewModel.SettingViewModelFactory
 import com.kls.githubuserian.viewModel.UserViewModel
+import com.kls.githubuserian.viewModel.ViewModelFactory
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var rvUser: RecyclerView
     private lateinit var progressBar: ProgressBar
-    private var userViewModel: UserViewModel = UserViewModel()
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+    private var userViewModel: UserViewModel = UserViewModel(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         setSupportActionBar(findViewById(R.id.toolbar))
-        userViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(UserViewModel::class.java)
+        val pref = SettingPreferences.getInstance(dataStore)
+
+        userViewModel = ViewModelProvider(this, SettingViewModelFactory(pref)).get(
+            UserViewModel::class.java
+        )
+
+        userViewModel.getThemeSettings().observe(this
+        ) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
 
         userViewModel.userList.observe(this) { listUser ->
-            if (listUser.size == 0){
-                Toast.makeText(this, "User Tidak Ditemukan", Toast.LENGTH_SHORT).show()
-            }else{
-                getUserList(listUser)
+            if (listUser != null) {
+                if (listUser.size == 0){
+                    Toast.makeText(this, "User Tidak Ditemukan", Toast.LENGTH_SHORT).show()
+                }else{
+                    getUserList(listUser)
+                }
             }
         }
 
@@ -59,6 +84,11 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(intent)
                 true
             }
+            R.id.menuSetting -> {
+                val intent = Intent(this,SettingActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -76,7 +106,7 @@ class HomeActivity : AppCompatActivity() {
             override fun onQueryTextSubmit(query: String): Boolean {
                 userViewModel.setListUser(query)
                 userViewModel.userList.observe(this@HomeActivity) { listUser ->
-                    getUserList(listUser)
+                    listUser?.let { getUserList(it) }
                 }
                 searchView.clearFocus()
                 return true

@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semibold"
             android:text="Github User"
-            android:textColor="@color/content_color"
+            style="@style/textContent"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="@+id/img_logo"
             app:layout_constraintStart_toStartOf="@+id/img_logo"

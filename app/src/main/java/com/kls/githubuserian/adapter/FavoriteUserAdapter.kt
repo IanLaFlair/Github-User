@@ -2,6 +2,7 @@ package com.kls.githubuserian.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +46,7 @@ class FavoriteUserViewHolder(private val binding: UserItemBinding): RecyclerView
                 database.avatar,
                 ""
             )
+            txtVisit.visibility = INVISIBLE
             root.setOnClickListener {
                 val moveWithObjectIntent = Intent(root.context, DetailActivity::class.java)
                 moveWithObjectIntent.putExtra(DetailActivity.EXTRA_USER, user)
